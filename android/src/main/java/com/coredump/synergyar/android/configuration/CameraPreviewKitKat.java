@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -26,7 +27,7 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    public static Camera getCamera(){
+    public static Camera initializeCamera(){
         Log.d(TAG, "Getting camera");
         Camera camera = null;
         //@// TODO: 10/31/15 algorithm to wait response for camera
@@ -36,6 +37,11 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
             Log.e(TAG, e.getMessage());
         }
         return camera;
+    }
+
+    public CameraPreviewKitKat(Context context) {
+        super(context);
+        initialize();
     }
 
     public CameraPreviewKitKat(Context context, Camera pcamera) {
@@ -63,9 +69,15 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
         //monitor changes to the surface
         holder = getHolder();
         holder.addCallback(this);
+        // We're changing the surface to a PUSH surface, meaning we're receiving
+        // all buffer data from another component - the camera, in this case.
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
-    @Override
+    /**should just 'start up' rendering code
+    * normal rendering will be in another thread.
+    **/
+     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "Create surface");
         try {
@@ -76,26 +88,24 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
         }
     }
 
+    // This method is called when the surface changes, e.g. when it's size is set.
+    // We use the opportunity to initialize the camera preview display dimensions.
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.d(TAG, "Change surface");
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
-
+        //if there is no surface return
         if (holder.getSurface() == null){
             // preview surface does not exist
             return;
         }
-
-        // stop preview before making changes
-        try {
-            camera.stopPreview();
-        } catch (Exception e){
-            // ignore: tried to stop a non-existent preview
-        }
+        // Stop the preview before resizing or reformatting it.
+        stopPreview();
 
         // set preview size and make any resize, rotate or
         // reformatting changes here
+        Camera.Parameters params = camera.getParameters();
+        params.setPreviewSize( width, height );
+        camera.setParameters(params);
 
         // start preview with new settings
         try {
@@ -111,21 +121,36 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.d(TAG, "Destroy surface");
         //Release camera preview on synergy activity
-
+        camera.stopPreview();
+        camera.release();
+        camera = null;
+        Log.d(TAG, "Clean camera");
     }
+
+    private void stopPreview() {
+        // stop preview before making changes
+        try {
+            camera.stopPreview();
+        } catch (Exception e){
+            // ignore: tried to stop a non-existent preview
+        }
+        Log.d(TAG, "Stop preview");
+    }
+
 
     //@todo Needs to be declared on an interface
     public void startPreview() {
-
+        surfaceCreated(holder);
     }
 
     //@todo Needs to be declared on an interface
-    public void stopPreview() {
-
+    public void releaseCamera() {
+        surfaceDestroyed(holder);
     }
-    
+
     //@todo Needs to be declared on an interface
-    public static void releaseCamera() {
-
+    public Camera getCamera() {
+        return camera;
     }
+
 }
