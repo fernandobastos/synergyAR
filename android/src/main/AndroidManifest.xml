@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.coredump.synergyar.android.AndroidLauncher"
+            android:name="com.coredump.synergyar.android.configuraiton.SynergyActivity"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
