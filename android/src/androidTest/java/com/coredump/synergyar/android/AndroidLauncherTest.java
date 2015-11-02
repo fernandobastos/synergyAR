@@ -1,8 +1,9 @@
 package com.coredump.synergyar.android;
 
+import com.coredump.synergyar.android.configuration.SynergyActivity;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.SmallTest;
-
 /**
  * Checks correctness of the instantiation of the app.
  *
@@ -10,13 +11,13 @@ import android.test.suitebuilder.annotation.SmallTest;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class AndroidLauncherTest extends ActivityInstrumentationTestCase2<AndroidLauncher> {
+public class AndroidLauncherTest extends ActivityInstrumentationTestCase2<SynergyActivity> {
 
   /**
   * No parameter constructor.
   */
   public AndroidLauncherTest() {
-    super(AndroidLauncher.class);
+    super(SynergyActivity.class);
   }
 
   /**

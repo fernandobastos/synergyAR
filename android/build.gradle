@@ -1,7 +1,7 @@
 android {
 
     buildToolsVersion "23.0.1"
-    compileSdkVersion 20
+    compileSdkVersion 23
 
     sourceSets {
         main {
@@ -22,6 +22,10 @@ android {
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
         testHandleProfiling true
         testFunctionalTest true
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -124,3 +128,5 @@ idea {
         }
     }
 }
+
+

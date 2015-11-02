@@ -1,21 +1,18 @@
-package com.coredump.synergyar.android.configuration;
+package com.coredump.synergyar.android.configuration.camera;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
 
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
+import com.coredump.synergyar.DeviceCameraController;
+import com.coredump.synergyar.android.augmentedview.CameraPreviewKitKat;
+import com.coredump.synergyar.android.configuration.SynergyActivity;
+
 import android.hardware.Camera;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.ViewGroup.LayoutParams;
 
-public class CameraHandler implements Camera.PictureCallback, Camera.AutoFocusCallback {
+//DeviceCameraController
+public class CameraHandler implements  Camera.PictureCallback, Camera.AutoFocusCallback {
 
     private static final int ONE_SECOND_IN_MILI = 1000;
     private final SynergyActivity activity;
@@ -38,7 +35,6 @@ public class CameraHandler implements Camera.PictureCallback, Camera.AutoFocusCa
         // LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
         activity.addView(cameraPreview, 0);
     }
-
 
     public synchronized void startPreview() {
         // ...and start previewing. From now on, the camera keeps pushing

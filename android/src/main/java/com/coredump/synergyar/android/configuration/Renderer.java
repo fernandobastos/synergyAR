@@ -11,6 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL30;
+import com.coredump.synergyar.android.configuration.camera.CameraHandler;
 
 public class Renderer implements ApplicationListener {
 

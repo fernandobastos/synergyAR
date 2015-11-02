@@ -1,4 +1,4 @@
-package com.coredump.synergyar.android.configuration;
+package com.coredump.synergyar.android.augmentedview;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,6 +14,7 @@ import java.io.IOException;
 /**
  * @author fabio
  * @version 0.0.1
+ * @since 0.0.1
  * @see Camera
  */
 public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Callback {

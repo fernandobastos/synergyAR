@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.R;
+import com.coredump.synergyar.android.configuration.camera.CameraHandler;
 
 public class SynergyActivity extends AndroidApplication {
     private int origWidth;
