@@ -12,6 +12,11 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 //DeviceCameraController
+/**
+ * @author fabio
+ * @version 0.0.1
+ * @since 0.0.1
+ */
 public class CameraHandler implements  Camera.PictureCallback, Camera.AutoFocusCallback {
 
     private static final int ONE_SECOND_IN_MILI = 1000;

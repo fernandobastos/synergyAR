@@ -12,7 +12,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL30;
 import com.coredump.synergyar.android.configuration.camera.CameraHandler;
-
+/**
+ * @author fabio
+ * @version 0.0.1
+ * @since 0.0.1
+ */
 public class Renderer implements ApplicationListener {
 
     public enum Mode {

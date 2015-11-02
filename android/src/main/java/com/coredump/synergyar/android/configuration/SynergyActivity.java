@@ -11,7 +11,11 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.R;
 import com.coredump.synergyar.android.configuration.camera.CameraHandler;
-
+/**
+ * @author fabio
+ * @version 0.0.1
+ * @since 0.0.1
+ */
 public class SynergyActivity extends AndroidApplication {
     private int origWidth;
     private int origHeight;
