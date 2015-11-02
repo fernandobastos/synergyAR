@@ -19,20 +19,14 @@ public interface DeviceCameraController {
 
     void stopPreview();
 
-    void takePicture();
-
-    byte[] getPictureData();
-
     // Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+    void prepareCameraAsync();
+
     void startPreviewAsync();
 
     void stopPreviewAsync();
 
-    byte[] takePictureAsync(long timeout);
-
-    void saveAsJpeg(FileHandle jpgfile, Pixmap cameraPixmap);
-
     boolean isReady();
 
-    void prepareCameraAsync();
+
 }

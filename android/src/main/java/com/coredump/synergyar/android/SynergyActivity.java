@@ -1,4 +1,4 @@
-package com.coredump.synergyar.android.configuration;
+package com.coredump.synergyar.android;
 
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -10,7 +10,8 @@ import android.widget.FrameLayout;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.R;
-import com.coredump.synergyar.android.configuration.camera.CameraHandler;
+import com.coredump.synergyar.android.configuration.Renderer;
+import com.coredump.synergyar.android.configuration.camera.CameraControllerKitKat;
 /**
  * @author fabio
  * @version 0.0.1
@@ -21,9 +22,7 @@ public class SynergyActivity extends AndroidApplication {
     private int origHeight;
     private FrameLayout main;
 
-    private CameraHandler cameraControl;
     private Renderer renderer;
-    private View view;
 
     public void addView(View view, int index) {
         main.addView(view, index);
@@ -77,10 +76,9 @@ public class SynergyActivity extends AndroidApplication {
         cfg.a = 8;
 
         // Camera Part
+        CameraControllerKitKat cameraControl = new CameraControllerKitKat(this);
 
-        cameraControl = new CameraHandler(this);
-
-        view = initializeForView(renderer = new Renderer(this, cameraControl),
+        View view = initializeForView(renderer = new Renderer(this, cameraControl),
                 cfg);
         // keep the original screen size
         origWidth = graphics.getWidth();

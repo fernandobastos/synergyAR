@@ -17,8 +17,8 @@ import java.io.IOException;
  * @since 0.0.1
  * @see Camera
  */
-public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Callback {
-    private static final String TAG = "CameraPreview(old)";
+public class CameraSurfaceKitKat extends SurfaceView implements SurfaceHolder.Callback {
+    private static final String TAG = "CameraSurfaceKitKat";
     private Camera camera;
     private SurfaceHolder holder;
 
@@ -40,12 +40,13 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
         return camera;
     }
 
-    public CameraPreviewKitKat(Context context) {
+    public CameraSurfaceKitKat(Context context) {
         super(context);
+        Log.d(TAG, "Constructor");
         initialize();
     }
 
-    public CameraPreviewKitKat(Context context, Camera pcamera) {
+    public CameraSurfaceKitKat(Context context, Camera pcamera) {
         super(context);
         camera = pcamera;
         Log.d(TAG, "Constructor");
@@ -53,13 +54,13 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
 
     }
 
-    public CameraPreviewKitKat(Context context, AttributeSet attrs) {
+    public CameraSurfaceKitKat(Context context, AttributeSet attrs) {
         super(context, attrs);
         Log.d(TAG, "Constructor");
         initialize();
     }
 
-    public CameraPreviewKitKat(Context context, AttributeSet attrs, int defStyle) {
+    public CameraSurfaceKitKat(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         Log.d(TAG, "Constructor");
         initialize();
@@ -138,18 +139,6 @@ public class CameraPreviewKitKat extends SurfaceView implements SurfaceHolder.Ca
         Log.d(TAG, "Stop preview");
     }
 
-
-    //@todo Needs to be declared on an interface
-    public void startPreview() {
-        surfaceCreated(holder);
-    }
-
-    //@todo Needs to be declared on an interface
-    public void releaseCamera() {
-        surfaceDestroyed(holder);
-    }
-
-    //@todo Needs to be declared on an interface
     public Camera getCamera() {
         return camera;
     }

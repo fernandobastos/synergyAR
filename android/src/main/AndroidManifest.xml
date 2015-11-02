@@ -6,8 +6,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    @SuppressLint
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23" />
+
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="23" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.coredump.synergyar.android.configuration.SynergyActivity"
+            android:name=".SynergyActivity"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">

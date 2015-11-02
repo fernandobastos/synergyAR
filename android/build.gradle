@@ -24,9 +24,12 @@ android {
         testFunctionalTest true
     }
 
-    lintOptions {
-        abortOnError false
+    android {
+        lintOptions {
+            abortOnError false
+        }
     }
+
 }
 
 
@@ -72,7 +75,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.coredump.synergyar.android/com.coredump.synergyar.android.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.coredump.synergyar.android/com.coredump.synergyar.android.SynergyActivity'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.

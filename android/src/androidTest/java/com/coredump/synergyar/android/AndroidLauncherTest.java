@@ -1,7 +1,5 @@
 package com.coredump.synergyar.android;
 
-import com.coredump.synergyar.android.configuration.SynergyActivity;
-
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.SmallTest;
 /**

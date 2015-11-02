@@ -11,26 +11,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL30;
-import com.coredump.synergyar.android.configuration.camera.CameraHandler;
+import com.coredump.synergyar.DeviceCameraController;
 /**
  * @author fabio
  * @version 0.0.1
  * @since 0.0.1
  */
 public class Renderer implements ApplicationListener {
-
+    //@// TODO: 11/2/15 use state pattern for this 
     public enum Mode {
         normal, prepare, preview
     }
 
     private Mode mode = Mode.normal;
-    private final CameraHandler deviceCameraControl;
+    private final DeviceCameraController deviceCameraControl;
     public Screen screen;
     private Context context;
     private InputMultiplexer multiplexer;
     public Semaphore canRender = new Semaphore(1);
 
-    public Renderer(Context context, CameraHandler cameraControl) {
+    public Renderer(Context context, DeviceCameraController cameraControl) {
         this.deviceCameraControl = cameraControl;
         this.context = context;
     }
@@ -45,7 +45,8 @@ public class Renderer implements ApplicationListener {
         Gdx.input.setInputProcessor(multiplexer);
 
     }
-
+    
+    //@// TODO: 11/2/15 implement this on ApplicationState 
     @Override
     public void render() {
         if (mode == Mode.normal) {
