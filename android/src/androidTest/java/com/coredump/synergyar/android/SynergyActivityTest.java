@@ -9,12 +9,12 @@ import android.test.suitebuilder.annotation.SmallTest;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class AndroidLauncherTest extends ActivityInstrumentationTestCase2<SynergyActivity> {
+public class SynergyActivityTest extends ActivityInstrumentationTestCase2<SynergyActivity> {
 
   /**
   * No parameter constructor.
   */
-  public AndroidLauncherTest() {
+  public SynergyActivityTest() {
     super(SynergyActivity.class);
   }
 
