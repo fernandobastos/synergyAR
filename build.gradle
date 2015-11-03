@@ -30,7 +30,7 @@ allprojects {
 }
 
 project(":android") {
-    apply plugin: "android-library"
+    apply plugin: "com.android.application"
 
     configurations { natives }
 

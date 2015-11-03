@@ -5,6 +5,7 @@ import java.util.concurrent.Semaphore;
 
 import android.content.Context;
 import android.os.Looper;
+import android.util.Log;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -18,7 +19,9 @@ import com.coredump.synergyar.DeviceCameraController;
  * @since 0.0.1
  */
 public class Renderer implements ApplicationListener {
-    //@// TODO: 11/2/15 use state pattern for this 
+    private static final String TAG="Renderer";
+
+    //@// TODO: 11/2/15 use state pattern for this
     public enum Mode {
         normal, prepare, preview
     }
@@ -31,12 +34,14 @@ public class Renderer implements ApplicationListener {
     public Semaphore canRender = new Semaphore(1);
 
     public Renderer(Context context, DeviceCameraController cameraControl) {
+        Log.d(TAG,"Constructor");
         this.deviceCameraControl = cameraControl;
         this.context = context;
     }
 
     @Override
     public void create() {
+        Log.d(TAG,"Create");
         Looper.prepare();
         //screen = new Screen(context);
         //screen.init(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -49,7 +54,12 @@ public class Renderer implements ApplicationListener {
     //@// TODO: 11/2/15 implement this on ApplicationState 
     @Override
     public void render() {
-        if (mode == Mode.normal) {
+        Log.d(TAG,"Rendering");
+        if (deviceCameraControl != null) {
+            System.out.println("Camera-Prepare");
+            deviceCameraControl.prepareCameraAsync();
+        }
+        /*if (mode == Mode.normal) {
             mode = Mode.prepare;
             if (deviceCameraControl != null) {
                 System.out.println("Camera-Prepare");
@@ -58,7 +68,7 @@ public class Renderer implements ApplicationListener {
         }
         //Gdx.gl30.glHint(GL30.GL_PERSPECTIVE_CORRECTION_HINT, GL30.GL_NICEST);
         if (mode == Mode.prepare) {
-            Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            //Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             if (deviceCameraControl != null) {
                 if (deviceCameraControl.isReady()) {
                     System.out.println("Camera-Preview");
@@ -67,12 +77,12 @@ public class Renderer implements ApplicationListener {
                 }
             }
         } else if (mode == Mode.preview) {
-            Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            //Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         } else { // mode = normal
-            Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            //Gdx.gl30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
         // ----------------------------------------------------------------------------//
-        Gdx.gl30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        /*Gdx.gl30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         Gdx.gl30.glEnable(GL30.GL_DEPTH_TEST);
         Gdx.gl30.glEnable(GL30.GL_TEXTURE);
         Gdx.gl30.glEnable(GL30.GL_TEXTURE_2D);
@@ -90,26 +100,29 @@ public class Renderer implements ApplicationListener {
             screen.render(2);
             //screen.render();
             canRender.release();
-        }
+        }*/
     }
 
     @Override
     public void resize(int width, int height) {
+        Log.d(TAG,"Resize");
     }
 
     @Override
     public void pause() {
+        Log.d(TAG,"Pause");
         deviceCameraControl.stopPreviewAsync();
         mode = Mode.normal;
     }
 
     @Override
     public void resume() {
-
+        Log.d(TAG,"Resume");
     }
 
     @Override
     public void dispose() {
+        Log.d(TAG,"Dispose");
         if (multiplexer != null) {
             multiplexer.clear();
             multiplexer = null;

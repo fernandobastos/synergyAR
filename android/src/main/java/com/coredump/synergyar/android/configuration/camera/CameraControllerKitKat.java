@@ -8,6 +8,7 @@ import com.coredump.synergyar.android.SynergyActivity;
 
 import android.app.ActionBar;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -21,21 +22,24 @@ import android.view.ViewGroup.LayoutParams;
  */
 public class CameraControllerKitKat implements  DeviceCameraController {
 
+    private static final String TAG = "CameraControllerKitKat";
     private static final int ONE_SECOND_IN_MILI = 1000;
     private final SynergyActivity mactivity;
     private CameraSurfaceKitKat mcameraSurface;
 
     public CameraControllerKitKat(SynergyActivity mactivity) {
+        Log.d(TAG, "Constructor");
         this.mactivity = mactivity;
     }
 
     @Override
     public synchronized void prepareCamera() {
+        Log.d(TAG,"Sync PrepareCamera");
         Display display = mactivity.getWindowManager().getDefaultDisplay();
-        mactivity.setFixedSize(display.getWidth(), display.getHeight());
+        //mactivity.setFixedSize(display.getWidth(), display.getHeight());
 
         if (mcameraSurface == null) {
-            mcameraSurface = new CameraSurfaceKitKat(mactivity);
+            mcameraSurface = new CameraSurfaceKitKat(mactivity, CameraSurfaceKitKat.initializeCamera());
         }
         // mactivity.addContentView( mcameraSurface, new LayoutParams(
         // LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
@@ -45,6 +49,7 @@ public class CameraControllerKitKat implements  DeviceCameraController {
 
     @Override
     public synchronized void startPreview() {
+        Log.d(TAG,"Sync StartPreview");
         // ...and start previewing. From now on, the camera keeps pushing
         // preview
         // images to the surface.
@@ -55,6 +60,7 @@ public class CameraControllerKitKat implements  DeviceCameraController {
 
     @Override
     public synchronized void stopPreview() {
+        Log.d(TAG,"Sync StopPreview");
         // stop previewing.
         if (mcameraSurface != null) {
             ViewParent parentView = mcameraSurface.getParent();
@@ -68,7 +74,7 @@ public class CameraControllerKitKat implements  DeviceCameraController {
             }
             mcameraSurface = null;
         }
-        mactivity.restoreFixedSize();
+        //mactivity.restoreFixedSize();
     }
 
     public void setCameraParametersForPicture(Camera camera) {
@@ -93,36 +99,40 @@ public class CameraControllerKitKat implements  DeviceCameraController {
     //async methods
     @Override
     public void prepareCameraAsync() {
+        Log.d(TAG,"Async PrepareCamera");
         Runnable r = new Runnable() {
             public void run() {
                 prepareCamera();
             }
         };
-        mactivity.post(r);
+        //mactivity.post(r);
     }
 
     @Override
     public synchronized void startPreviewAsync() {
+        Log.d(TAG,"Async PreviewAsync");
         Runnable r = new Runnable() {
             public void run() {
                 startPreview();
             }
         };
-        mactivity.post(r);
+        //mactivity.post(r);
     }
 
     @Override
     public synchronized void stopPreviewAsync() {
+        Log.d(TAG,"ASync StopPreview");
         Runnable r = new Runnable() {
             public void run() {
                 stopPreview();
             }
         };
-        mactivity.post(r);
+        //mactivity.post(r);
     }
 
     @Override
     public boolean isReady() {
+        Log.d(TAG,"Is Ready?");
         if (mcameraSurface != null && mcameraSurface.getCamera() != null) {
             return true;
         }
