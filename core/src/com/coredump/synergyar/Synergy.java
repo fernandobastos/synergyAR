@@ -6,6 +6,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * @author fabio
+ * @version 0.0.1
+ * @since 0.0.1
+ * Created by fabio on 11/1/15.
+ */
 public class Synergy extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
