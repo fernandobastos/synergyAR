@@ -30,7 +30,7 @@ allprojects {
 }
 
 project(":android") {
-    apply plugin: "android"
+    apply plugin: "com.android.application"
 
     configurations { natives }
 
@@ -52,6 +52,7 @@ project(":android") {
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
+        compile 'junit:junit:4.12'
     }
 }
 

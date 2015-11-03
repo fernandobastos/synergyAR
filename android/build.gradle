@@ -1,26 +1,42 @@
 android {
+
     buildToolsVersion "23.0.1"
-    compileSdkVersion 20
+    compileSdkVersion 23
+
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+            aidl.srcDirs = ['src/main/java']
+            renderscript.srcDirs = ['src/main/java']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-
-        instrumentTest.setRoot('tests')
+        androidTest.setRoot('src/androidTest')
+        instrumentTest.setRoot('src/androidTest')
     }
+
+    defaultConfig {
+        testApplicationId 'com.coredump.synergyar.test'
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+        testHandleProfiling true
+        testFunctionalTest true
+    }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
 }
 
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
-task copyAndroidNatives() { 
+task copyAndroidNatives() {
     file("libs/armeabi/").mkdirs();
     file("libs/armeabi-v7a/").mkdirs();
     file("libs/x86/").mkdirs();
@@ -59,7 +75,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.coredump.synergyar.android/com.coredump.synergyar.android.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.coredump.synergyar.android/com.coredump.synergyar.android.SynergyActivity'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
@@ -78,8 +94,8 @@ eclipse {
     }
 
     classpath {
-        plusConfigurations += [ project.configurations.compile ]        
-        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'       
+        plusConfigurations += [ project.configurations.compile ]
+        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'
     }
 
     project {
@@ -97,7 +113,7 @@ eclipse {
 idea {
     module {
         sourceDirs += file("src");
-        scopes = [ COMPILE: [plus:[project.configurations.compile]]]        
+        scopes = [ COMPILE: [plus:[project.configurations.compile]]]
 
         iml {
             withXml {
@@ -115,3 +131,5 @@ idea {
         }
     }
 }
+
+
