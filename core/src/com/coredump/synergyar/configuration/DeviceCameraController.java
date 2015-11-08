@@ -1,4 +1,4 @@
-package com.coredump.synergyar;
+package com.coredump.synergyar.configuration;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -13,11 +13,19 @@ import com.badlogic.gdx.graphics.Pixmap;
 public interface DeviceCameraController {
 
     // Synchronous interface
+    void saveAsJpeg(FileHandle jpgfile, Pixmap cameraPixmap);
+
+    boolean isReady();
+
     void prepareCamera();
 
     void startPreview();
 
     void stopPreview();
+
+    void takePicture();
+
+    byte[] getPictureData();
 
     // Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
     void prepareCameraAsync();
@@ -26,7 +34,6 @@ public interface DeviceCameraController {
 
     void stopPreviewAsync();
 
-    boolean isReady();
-
+    byte[] takePictureAsync(long timeout);
 
 }
