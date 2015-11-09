@@ -27,13 +27,24 @@ public interface DeviceCameraController {
 
     byte[] getPictureData();
 
-    // Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+    /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+     * called asynchronous from the Libgdx rendering thread
+     */
     void prepareCameraAsync();
 
+    /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+     * called asynchronous from the Libgdx rendering thread
+     */
     void startPreviewAsync();
 
+    /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+     * called asynchronous from the Libgdx rendering thread
+     */
     void stopPreviewAsync();
 
+    /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
+     * called asynchronous from the Libgdx rendering thread
+     */
     byte[] takePictureAsync(long timeout);
 
 }

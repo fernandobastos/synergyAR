@@ -11,15 +11,18 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * Class for displaying the camera view
  * @author fabio
  * @version 0.0.1
  * @since 0.0.1
  * @see Camera
+ * @see SurfaceHolder
  */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getName();
-
+    //device camera
     private Camera mCamera;
+    //pass image data from the camera to the application
     private SurfaceHolder holder;
 
     public CameraPreview(Context context) {
@@ -28,6 +31,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         initialize();
     }
 
+    /**
+     * Releases the camera object and cleans the
+     * {@link Camera} field
+     */
     private void releaseCamera() {
         if(mCamera != null){
             //Disconnects and releases the Camera object resources.
@@ -58,9 +65,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         return mCamera;
     }
 
-    /**should just 'start up' rendering code
-    * normal rendering will be in another thread.
-    **/
+    /**
+     * should just 'start up' rendering code
+     * normal rendering will be in another thread.
+     */
      @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "Create surface");
@@ -121,13 +129,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     /**
-     * @// TODO: 11/7/15 put this on controller
-     * Check if device has a mCamera
-     *****************************************************************************************/
+     * Checks if the device has a {@link Camera) needs
+     * the {@link Context} to get the {@link PackageManager}
+     * <p> This method should be run before the opening the camera
+     *
+     * @param context application context, needed to check device hardware
+     *               using the PackageManager.
+     */
     private static boolean hasCameraHardware(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
+    /**
+     * This class initializes the camera object in a safe way
+     *
+     * <p>The {@link #surfaceCreated(SurfaceHolder)} method uses this method to
+     * get an instance of the {@link Camera}
+     * @param cameraId identifies the device camera
+     * @param context check the existence of the camera
+     * @return a Camera instance
+     */
     public static Camera safeCameraOpen(int cameraId, Context context){
         //useful if we need to send a notification to the user
         Log.d(TAG, "Getting mCamera");

@@ -12,24 +12,23 @@ import com.coredump.synergyar.configuration.DeviceCameraController;
 import com.coredump.synergyar.android.augmentedview.CameraPreview;
 import com.coredump.synergyar.android.SynergyActivity;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
-
 import android.app.ActionBar;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Display;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewGroup.LayoutParams;
 
 //DeviceCameraController
 /**
+ * This class controls the flow of the camera
  * @author fabio
  * @version 0.0.1
  * @since 0.0.1
+ * @see SynergyActivity
+ * @see CameraPreview
  */
 public class CameraController implements DeviceCameraController, Camera.PictureCallback, Camera.AutoFocusCallback {
 
@@ -170,7 +169,7 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
                 timeout -= ONE_SECOND_IN_MILI;
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(TAG, "Error", e);
             }
         }
         if (mPictureData == null) {
