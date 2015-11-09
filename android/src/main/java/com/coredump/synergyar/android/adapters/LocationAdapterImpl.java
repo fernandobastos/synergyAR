@@ -13,8 +13,8 @@ public class LocationAdapterImpl implements LocationAdapter {
 
     private LocationSensor mlocationAdaptee;
 
-    public LocationAdapterImpl(Context context, LocationSensorListener locationSensorListener) {
-        mlocationAdaptee = new LocationSensor(context, locationSensorListener);
+    public LocationAdapterImpl(Context context) {
+        mlocationAdaptee = new LocationSensor(context);
     }
 
     @Override
@@ -22,4 +22,13 @@ public class LocationAdapterImpl implements LocationAdapter {
         return mlocationAdaptee.getLocation();
     }
 
+    @Override
+    public void startRequestLocationUpdates(LocationSensorListener locationSensorListener) {
+        mlocationAdaptee.startRequestLocationUpdates(locationSensorListener);
+    }
+
+    @Override
+    public void removeUpdates() {
+        mlocationAdaptee.removeUpdates();
+    }
 }

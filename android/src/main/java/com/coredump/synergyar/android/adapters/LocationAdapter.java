@@ -1,5 +1,7 @@
 package com.coredump.synergyar.android.adapters;
 
+import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
+
 import android.location.Location;
 
 /**
@@ -10,4 +12,6 @@ import android.location.Location;
 public interface LocationAdapter {
 
     Location getLocation();
+    void startRequestLocationUpdates(LocationSensorListener locationSensorListener);
+    void removeUpdates();
 }
