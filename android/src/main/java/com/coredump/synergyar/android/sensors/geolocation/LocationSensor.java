@@ -19,7 +19,7 @@ import android.util.Log;
  */
 public class LocationSensor {
 
-    private static final String TAG = "LocationSensor";
+    private static final String TAG = LocationSensor.class.getName();
 
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
