@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.augmentedview.CameraPreview;
@@ -26,18 +28,14 @@ import java.util.List;
  */
 
 public class SynergyActivity extends AndroidApplication {
-    private static final String TAG = "SynergyActivity";
+    private static final String TAG = SynergyActivity.class.getName();
     private int mOrigWidth;
     private int mOrigHeight;
-    //camera test @// TODO: 11/3/15 remove this
-    Camera mCamera;
-    CameraPreview mCameraPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "OnCreate");
         super.onCreate(savedInstanceState);
-
         AndroidApplicationConfiguration configuration = new AndroidApplicationConfiguration();
         configuration.useGLSurfaceView20API18 = false;
         // we need to change the default pixel format - since it does not include an alpha channel
@@ -46,10 +44,8 @@ public class SynergyActivity extends AndroidApplication {
         configuration.g = 8;
         configuration.b = 8;
         configuration.a = 8;
-
         DeviceCameraController cameraControl = new CameraController(this);
         initialize(new SynergyAdapter(cameraControl), configuration);
-
         if (graphics.getView() instanceof SurfaceView) {
             SurfaceView glView = (SurfaceView) graphics.getView();
             // @// TODO: 11/8/15 check this comment
@@ -93,6 +89,7 @@ public class SynergyActivity extends AndroidApplication {
     protected void onResume() {
         Log.d(TAG, "OnResume");
         super.onResume();
+
     }
 
     public void post(Runnable r) {

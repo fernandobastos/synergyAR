@@ -1,17 +1,14 @@
 package com.coredump.synergyar.android.augmentedview;
 
-import com.coredump.synergyar.android.R;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author fabio
@@ -20,17 +17,15 @@ import java.io.IOException;
  * @see Camera
  */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    private static final String TAG = "CameraSurfaceKitKat";
+    private static final String TAG = CameraPreview.class.getName();
 
     private Camera mCamera;
     private SurfaceHolder holder;
 
-    public CameraPreview(Context context, Camera pcamera) {
+    public CameraPreview(Context context) {
         super(context);
-        mCamera = pcamera;
         Log.d(TAG, "Constructor");
         initialize();
-
     }
 
     private void releaseCamera() {
@@ -53,23 +48,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private void stopPreview() {
-        // stop preview before making changes
-        try {
-            mCamera.stopPreview();
-        } catch (Exception e) {
-            // ignore: tried to stop a non-existent preview
-        }
         Log.d(TAG, "Stop preview");
+        // stop preview before making changes
+        mCamera.stopPreview();
+
     }
 
     public Camera getCamera() {
         return mCamera;
     }
-
-    public void setCamera(Camera mCamera) {
-        this.mCamera = mCamera;
-    }
-
 
     /**should just 'start up' rendering code
     * normal rendering will be in another thread.
@@ -77,11 +64,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "Create surface");
-        try {
+         int cameraFacingBack = Camera.CameraInfo.CAMERA_FACING_BACK;
+         try {
+            mCamera = CameraPreview.safeCameraOpen(cameraFacingBack, this.getContext());
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
-            Log.d(TAG, "Error setting Camera preview", e);
+            Log.e(TAG, "Error setting Camera preview", e);
         }
     }
 
@@ -102,15 +91,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         Camera.Parameters params = mCamera.getParameters();
-        params.setPreviewSize( width, height );
+
+        //Get the device's supported sizes and pick the first,
+        // which is the largest
+        List<Camera.Size> sizes =
+                params.getSupportedPreviewSizes();
+        Camera.Size selected = sizes.get(0);
+
+        params.setPreviewSize(selected.width,selected.height);
         mCamera.setParameters(params);
 
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(holder);
+            Log.d(TAG, "StarPreview");
             mCamera.startPreview();
         } catch (IOException e) {
-            Log.d(TAG, "Error starting mCamera preview", e);
+            Log.e(TAG, "Error starting mCamera preview", e);
         }
     }
 

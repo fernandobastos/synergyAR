@@ -33,7 +33,7 @@ import android.view.ViewGroup.LayoutParams;
  */
 public class CameraController implements DeviceCameraController, Camera.PictureCallback, Camera.AutoFocusCallback {
 
-    private static final String TAG = "CameraController";
+    private static final String TAG = CameraController.class.getName();
     private static final int ONE_SECOND_IN_MILI = 1000;
     private final SynergyActivity mActivity;
     private CameraPreview mCameraPreview;
@@ -47,11 +47,11 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
     @Override
     public synchronized void prepareCamera() {
         Log.d(TAG,"Sync PrepareCamera");
-        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        //Display display = mActivity.getWindowManager().getDefaultDisplay();
         //mActivity.setFixedSize(display.getWidth(), display.getHeight());
 
         if (mCameraPreview == null) {
-            mCameraPreview = new CameraPreview(mActivity, CameraPreview.safeCameraOpen(1, mActivity));
+            mCameraPreview = new CameraPreview(mActivity);
         }
         // mActivity.addContentView( mCameraPreview, new LayoutParams(
         // LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
