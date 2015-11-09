@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * This class abstracts the communication with android Location sensor
@@ -18,34 +19,59 @@ import android.os.Bundle;
  */
 public class LocationSensor {
 
+    private static final String TAG = "LocationSensor";
+
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private LocationSensorListener mLocationSensorListener;
     private static final int ONE_MINUTE = 1000 * 60 * 1;
 
-    public LocationSensor(Context context, LocationSensorListener locationSensorListener) {
-        mLocationSensorListener = locationSensorListener;
+    public LocationSensor(Context context) {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        mLocationListener = new MyLocationListener();
-        mLocationManager
-                .requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
     }
 
     public Location getLocation() {
-        Criteria criteria = new Criteria();
-        String bestProvider = mLocationManager.getBestProvider(criteria, true);
-        return mLocationManager.getLastKnownLocation(bestProvider);
+        Log.i(TAG, "Getting latest known location");
+        Location gpsLocation = getLocationByProvider(LocationManager.GPS_PROVIDER);
+        Location networkLocation = getLocationByProvider(LocationManager.NETWORK_PROVIDER);
+
+        if (gpsLocation == null) {
+            return networkLocation;
+        }
+
+        if (networkLocation == null) {
+            return gpsLocation;
+        }
+
+        if (isBetterLocation(gpsLocation, networkLocation)) {
+            return gpsLocation;
+        } else {
+            return networkLocation;
+        }
+    }
+
+    public void startRequestLocationUpdates(LocationSensorListener locationSensorListener) {
+        mLocationSensorListener = locationSensorListener;
+        mLocationListener = new MyLocationListener();
+        mLocationManager
+                .requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        Log.i(TAG, "Started requesting location updates");
+    }
+
+    public void removeUpdates() {
+        Log.i(TAG, "removed location updates");
+        mLocationManager.removeUpdates(mLocationListener);
     }
 
     public String getBestProvider() {
         Criteria criteria = new Criteria();
 
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+        criteria.setAccuracy(Criteria.NO_REQUIREMENT);
         criteria.setSpeedRequired(true);
         criteria.setAltitudeRequired(true);
         criteria.setBearingRequired(true);
-        criteria.setCostAllowed(false);
+        criteria.setCostAllowed(true);
 
         return mLocationManager.getBestProvider(criteria, true);
     }
@@ -101,26 +127,40 @@ public class LocationSensor {
         return provider1.equals(provider2);
     }
 
+    private Location getLocationByProvider(String provider) {
+        Location location = null;
+
+        if (!mLocationManager.isProviderEnabled(provider)) {
+            return null;
+        }
+
+        location = mLocationManager.getLastKnownLocation(provider);
+
+        return location;
+    }
+
     public class MyLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {
+            Log.i(TAG, "New location: Long: " + location.getLongitude() + " | Lat: " +
+                    location.getLatitude());
             LocationSensor.this.mLocationSensorListener.locationChanged(location);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
+            Log.i(TAG, "Status changed. Provider: " + provider + " | Status: " + status);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            LocationSensor.this.mLocationSensorListener.locationChanged(new Location("Provider E"));
+            Log.i(TAG, "Provider enabled: " + provider);
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
+            Log.i(TAG, "Provider disabled: " + provider);
         }
     }
 }
