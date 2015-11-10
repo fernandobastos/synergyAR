@@ -35,12 +35,6 @@ public class SynergyAdapter implements ApplicationListener {
     @Override
     public void dispose() {
         Gdx.app.log(TAG, "OnDispose");
-        //texture.dispose();
-        //for (int i=0;i<6;i++) {
-        //    mesh[i].dispose();
-        //    mesh[i] = null;
-        //}
-        // texture = null;
     }
 
     @Override
