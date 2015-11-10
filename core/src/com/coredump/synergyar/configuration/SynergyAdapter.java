@@ -2,21 +2,8 @@ package com.coredump.synergyar.configuration;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.Pixmap.Filter;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.utils.Logger;
 
-import java.nio.ByteBuffer;
+
 
 /**
  * @author fabio
@@ -26,8 +13,6 @@ import java.nio.ByteBuffer;
  */
 public class SynergyAdapter implements ApplicationListener {
     private static final String TAG = SynergyAdapter.class.getName();;
-    private PerspectiveCamera mPerspectiveCamera;
-
     private final DeviceCameraController mDeviceCameraController;
     private Mode mode = Mode.normal;
 
