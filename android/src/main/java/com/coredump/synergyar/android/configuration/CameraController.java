@@ -1,4 +1,4 @@
-package com.coredump.synergyar.android.configuration.camera;
+package com.coredump.synergyar.android.configuration;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,7 +30,7 @@ import android.view.ViewGroup.LayoutParams;
  * @see SynergyActivity
  * @see CameraPreview
  */
-public class CameraController implements DeviceCameraController, Camera.PictureCallback, Camera.AutoFocusCallback {
+public class CameraController implements DeviceCameraController{//, Camera.PictureCallback, Camera.AutoFocusCallback {
 
     private static final String TAG = CameraController.class.getName();
     private static final int ONE_SECOND_IN_MILI = 1000;
@@ -55,7 +55,7 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         // mActivity.addContentView( mCameraPreview, new LayoutParams(
         // LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
         //@// TODO: 11/2/15 This only works on API>10
-        mActivity.addContentView(mCameraPreview, new ActionBar.LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ));
+        mActivity.addContentView(mCameraPreview, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }
 
     @Override
@@ -64,8 +64,8 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         // ...and start previewing. From now on, the camera keeps pushing
         // preview
         // images to the surface.
-        if (mCameraPreview != null && mCameraPreview.getCamera() != null) {
-            mCameraPreview.getCamera().startPreview();
+        if (mCameraPreview != null && mCameraPreview.hasCamera()) {
+            mCameraPreview.start();
         }
     }
 
@@ -80,15 +80,13 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
                 viewGroup.removeView(mCameraPreview);
 
             }
-            if (mCameraPreview.getCamera() != null) {
-                mCameraPreview.getCamera().stopPreview();
-            }
+            mCameraPreview.stop();
             mCameraPreview = null;
         }
         mActivity.restoreFixedSize();
     }
 
-    @Override
+    /*@Override
     public void takePicture() {
         // the user request to take a picture - start the process by requesting focus
         setCameraParametersForPicture(mCameraPreview.getCamera());
@@ -97,7 +95,7 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
 
     @Override
     public byte[] getPictureData() {
-        return new byte[0];
+        return mPictureData;
     }
 
     private void setCameraParametersForPicture(Camera camera) {
@@ -117,7 +115,7 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         params.setPictureSize(maxSupportedWidth, maxSupportedHeight);
         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         camera.setParameters(params);
-    }
+    }*/
 
     //async methods
     @Override
@@ -153,7 +151,7 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         mActivity.post(runnable);
     }
 
-    @Override
+    /*@Override
     public byte[] takePictureAsync(long timeout) {
         timeout *= ONE_SECOND_IN_MILI;
         mPictureData = null;
@@ -206,17 +204,18 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "Error while saving image", e);
         }
-    }
+    }*/
 
     @Override
     public boolean isReady() {
-        Log.d(TAG, "Is Ready?");
-        if (mCameraPreview != null && mCameraPreview.getCamera() != null) {
-            return true;
+        //Log.d(TAG, "Is Ready?");
+        boolean ready = false;
+        if (mCameraPreview != null) {
+            ready = mCameraPreview.hasCamera();
         }
-        return false;
+        return ready;
     }
-
+    /*
     @Override
     public synchronized void onAutoFocus(boolean success, Camera camera) {
         // Focus process finished, we now have focus (or not)
@@ -229,9 +228,9 @@ public class CameraController implements DeviceCameraController, Camera.PictureC
         }
     }
 
-    @Override
+   @Override
     public synchronized void onPictureTaken(byte[] pictureData, Camera camera) {
         // We got the picture data - keep it
         this.mPictureData = pictureData;
-    }
+    }*/
 }

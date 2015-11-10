@@ -59,6 +59,7 @@ project(":android") {
 
         //Google play services dependencies
         compile 'com.google.android.gms:play-services-maps:8.1.0'
+        compile 'com.google.android.gms:play-services-vision:8.3.0'
 
     }
 }

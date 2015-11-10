@@ -14,7 +14,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.augmentedview.CameraPreview;
-import com.coredump.synergyar.android.configuration.camera.CameraController;
+import com.coredump.synergyar.android.configuration.CameraController;
 import com.coredump.synergyar.configuration.DeviceCameraController;
 import com.coredump.synergyar.configuration.SynergyAdapter;
 

@@ -26,6 +26,6 @@ public class LocationSensorTest extends ActivityInstrumentationTestCase2<Synergy
     }
 
     public void testGetLocation() {
-        assertNotNull("Last location is null", mLocationSensor.getLocation());
+        assertNull("Last location is null", mLocationSensor.getLocation());
     }
 }

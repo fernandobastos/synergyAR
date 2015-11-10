@@ -18,12 +18,12 @@ import java.util.List;
  * @see Camera
  * @see SurfaceHolder
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements Preview {//, SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getName();
     //device camera
     private Camera mCamera;
     //pass image data from the camera to the application
-    private SurfaceHolder holder;
+    private SurfaceHolder mHolder;
 
     public CameraPreview(Context context) {
         super(context);
@@ -31,11 +31,33 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         initialize();
     }
 
+    //Public interface
+
+    /**
+     *
+     */
+    @Override
+    public void start() {
+        Log.d(TAG, "Starting camera preview");
+        mCamera.startPreview();
+    }
+
+    @Override
+    public void stop() {
+        Log.d(TAG, "Stopping camera preview");
+        // stop preview before making changes
+        if(mCamera != null) {
+            mCamera.stopPreview();
+        }
+    }
+
     /**
      * Releases the camera object and cleans the
      * {@link Camera} field
      */
-    private void releaseCamera() {
+    @Override
+    public void release() {
+        Log.d(TAG, "Release camera");
         if(mCamera != null){
             //Disconnects and releases the Camera object resources.
             mCamera.release();
@@ -44,88 +66,71 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    @Override
+    public boolean hasCamera() {
+        return (mCamera != null);
+    }
+
     private void initialize() {
         Log.d(TAG, "Initializing object");
+
         //monitor changes to the surface
-        holder = getHolder();
-        holder.addCallback(this);
+        mHolder = getHolder();
+        mHolder.addCallback((SurfaceHolder.Callback) new SurfaceCallback());
         // We're changing the surface to a PUSH surface, meaning we're receiving
         // all buffer data from another component - the mCamera, in this case.
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
-    private void stopPreview() {
-        Log.d(TAG, "Stop preview");
-        // stop preview before making changes
-        mCamera.stopPreview();
 
-    }
+    private class SurfaceCallback implements  SurfaceHolder.Callback {
+        private final String INNER_TAG = SurfaceCallback.class.getName();
 
-    public Camera getCamera() {
-        return mCamera;
-    }
-
-    /**
-     * should just 'start up' rendering code
-     * normal rendering will be in another thread.
-     */
-     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(TAG, "Create surface");
-         int cameraFacingBack = Camera.CameraInfo.CAMERA_FACING_BACK;
-         try {
-            mCamera = CameraPreview.safeCameraOpen(cameraFacingBack, this.getContext());
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
-        } catch (IOException e) {
-            Log.e(TAG, "Error setting Camera preview", e);
-        }
-    }
-
-    // This method is called when the surface changes, e.g. when it's size is set.
-    // We use the opportunity to initialize the mCamera preview display dimensions.
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.d(TAG, "Change surface");
-
-        //if there is no surface return
-        if (holder.getSurface() == null) {
-            return;
+        public void surfaceCreated(SurfaceHolder mHolder) {
+            Log.d(INNER_TAG, "Create surface");
+            try {
+                mCamera = CameraPreview.safeCameraOpen(Camera.CameraInfo.CAMERA_FACING_BACK, CameraPreview.this.getContext());
+                mCamera.setPreviewDisplay(mHolder);
+            } catch (IOException e) {
+                Log.e(TAG, "Error setting Camera preview", e);
+            }
         }
 
-        // Stop the preview before resizing or reformatting it.
-        stopPreview();
+        // This method is called when the surface changes, e.g. when it's size is set.
+        // We use the opportunity to initialize the mCamera preview display dimensions.
+        @Override
+        public void surfaceChanged(SurfaceHolder mHolder, int format, int width, int height) {
+            Log.d(INNER_TAG, "Change surface");
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-        Camera.Parameters params = mCamera.getParameters();
+            //if there is no surface return
+            if (mHolder.getSurface() == null || !hasCamera()) {
+                return;
+            }
 
-        //Get the device's supported sizes and pick the first,
-        // which is the largest
-        List<Camera.Size> sizes =
-                params.getSupportedPreviewSizes();
-        Camera.Size selected = sizes.get(0);
+            // Stop the preview before resizing or reformatting it.
+            CameraPreview.this.stop();
 
-        params.setPreviewSize(selected.width,selected.height);
-        mCamera.setParameters(params);
+            // set preview size and make any resize, rotate or
+            // reformatting changes here
+            Camera.Parameters params = mCamera.getParameters();
 
-        // start preview with new settings
-        try {
-            mCamera.setPreviewDisplay(holder);
-            Log.d(TAG, "StarPreview");
-            mCamera.startPreview();
-        } catch (IOException e) {
-            Log.e(TAG, "Error starting mCamera preview", e);
+            //Get the device's supported sizes and pick the first,
+            // which is the largest
+            List<Camera.Size> sizes =
+                    params.getSupportedPreviewSizes();
+            Camera.Size selected = sizes.get(0);
+
+            params.setPreviewSize(selected.width,selected.height);
+            mCamera.setParameters(params);
         }
-    }
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.d(TAG, "Destroy surface");
-        //Release mCamera preview on synergy activity
-        mCamera.stopPreview();
-        releaseCamera();
-        Log.d(TAG, "Clean Camera");
+        @Override
+        public void surfaceDestroyed(SurfaceHolder mHolder) {
+            Log.d(INNER_TAG, "Destroy surface");
+            //Release mCamera preview on synergy activity
+            //CameraPreview.this.stop();
+            //CameraPreview.this.release();
+        }
     }
 
     /**
@@ -143,7 +148,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     /**
      * This class initializes the camera object in a safe way
      *
-     * <p>The {@link #surfaceCreated(SurfaceHolder)} method uses this method to
+     * <p> method uses this method to
      * get an instance of the {@link Camera}
      * @param cameraId identifies the device camera
      * @param context check the existence of the camera
@@ -155,7 +160,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera camera = null;
         //@// TODO: 10/31/15 algorithm to wait response for mCamera
         if(hasCameraHardware(context))
-        camera = Camera.open(cameraId);
+            camera = Camera.open(cameraId);
         return camera;
     }
     /****************************************************************************************/

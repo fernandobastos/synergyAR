@@ -137,8 +137,8 @@ public class SynergyAdapter implements ApplicationListener {
     private Mode mode = Mode.normal;
     @Override
     public void render() {
-        Gdx.app.log(TAG, "OnRender");
-        Gdx.app.log(TAG, mode.toString());
+        //Gdx.app.log(TAG, "OnRender");
+        //Gdx.app.log(TAG, mode.toString());
 
         if (mode == Mode.normal) {
             if (mDeviceCameraController != null) {
@@ -147,11 +147,9 @@ public class SynergyAdapter implements ApplicationListener {
             }
         }
         if (mode == Mode.prepare) {
-            if (mDeviceCameraController != null) {
-                if (mDeviceCameraController.isReady()) {
-                    mode = Mode.preview;
-                    mDeviceCameraController.startPreviewAsync();
-                }
+            if (mDeviceCameraController != null && mDeviceCameraController.isReady()) {
+                mode = Mode.preview;
+                mDeviceCameraController.startPreviewAsync();
             }
         }
 
@@ -276,6 +274,10 @@ public class SynergyAdapter implements ApplicationListener {
 	@Override
 	public void pause() {
         Gdx.app.log(TAG, "OnPause");
+        if(mDeviceCameraController!= null && mDeviceCameraController.isReady()) {
+            mode = Mode.normal;
+            mDeviceCameraController.stopPreviewAsync();
+        }
 	}
 
 	@Override

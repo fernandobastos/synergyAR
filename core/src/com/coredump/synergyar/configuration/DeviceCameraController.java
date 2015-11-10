@@ -13,19 +13,20 @@ import com.badlogic.gdx.graphics.Pixmap;
 public interface DeviceCameraController {
 
     // Synchronous interface
-    void saveAsJpeg(FileHandle jpgfile, Pixmap cameraPixmap);
+    //void saveAsJpeg(FileHandle jpgfile, Pixmap cameraPixmap);
 
     boolean isReady();
 
+    /**
+     * Prepares the device for displaying images
+     * Adds the camera view to the
+     */
     void prepareCamera();
 
     void startPreview();
 
     void stopPreview();
 
-    void takePicture();
-
-    byte[] getPictureData();
 
     /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
      * called asynchronous from the Libgdx rendering thread
@@ -41,10 +42,5 @@ public interface DeviceCameraController {
      * called asynchronous from the Libgdx rendering thread
      */
     void stopPreviewAsync();
-
-    /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
-     * called asynchronous from the Libgdx rendering thread
-     */
-    byte[] takePictureAsync(long timeout);
 
 }
