@@ -2,14 +2,19 @@ package com.coredump.synergyar.android;
 
 
 import android.graphics.PixelFormat;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.coredump.synergyar.android.adapters.LocationAdapter;
+import com.coredump.synergyar.android.adapters.LocationAdapterImpl;
 import com.coredump.synergyar.android.configuration.CameraController;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensor;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
@@ -22,7 +27,7 @@ import com.coredump.synergyar.configuration.SynergyAdapter;
  * @since 0.0.1
  */
 
-public class SynergyActivity extends AndroidApplication {
+public class SynergyActivity extends AndroidApplication implements LocationSensorListener {
     private static final String TAG = SynergyActivity.class.getName();
     private int mOrigWidth;
     private int mOrigHeight;
@@ -52,6 +57,22 @@ public class SynergyActivity extends AndroidApplication {
         // keep the original screen size
         mOrigHeight = graphics.getWidth();
         mOrigWidth = graphics.getHeight();
+
+        //Location
+        final LocationAdapter locationSensor = new LocationAdapterImpl(this);
+        Location lastKnownLocation = locationSensor.getLocation();
+        showToast("Lat: " + lastKnownLocation.getLatitude() + " | Long: " +
+                lastKnownLocation.getLongitude());
+
+        locationSensor.startRequestLocationUpdates(this);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                locationSensor.removeUpdates();
+            }
+        }, 40000);
     }
 
     @Override
@@ -95,5 +116,14 @@ public class SynergyActivity extends AndroidApplication {
             glView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
             glView.getHolder().setFixedSize(mOrigWidth, mOrigHeight);
         }
+    }
+
+    @Override
+    public void locationChanged(Location location) {
+        showToast("Lat: " + location.getLatitude() + " | Long: " + location.getLongitude());
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 }
