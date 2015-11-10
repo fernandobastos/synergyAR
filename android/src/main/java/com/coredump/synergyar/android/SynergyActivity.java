@@ -15,6 +15,8 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.augmentedview.CameraPreview;
 import com.coredump.synergyar.android.configuration.CameraController;
+import com.coredump.synergyar.android.sensors.geolocation.LocationSensor;
+import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
 import com.coredump.synergyar.configuration.DeviceCameraController;
 import com.coredump.synergyar.configuration.SynergyAdapter;
 
@@ -57,18 +59,6 @@ public class SynergyActivity extends AndroidApplication {
         // keep the original screen size
         mOrigHeight = graphics.getWidth();
         mOrigWidth = graphics.getHeight();
-
-        //@// TODO: 11/3/15 remove this
-        /*setContentView(R.layout.activity_main);
-        mCameraPreview = (CameraPreview) findViewById(R.id.view_camera);
-        mCameraPreview.getHolder().addCallback(this);
-        //Only for API<3.0
-        mCameraPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        Log.d(TAG, "BeforeCamera");
-        int cameraFacingBack = Camera.CameraInfo.CAMERA_FACING_BACK;
-        mCamera = Camera.open(cameraFacingBack);
-        Log.d(TAG, "AfterCamera");
-        */
     }
 
     @Override
@@ -89,7 +79,9 @@ public class SynergyActivity extends AndroidApplication {
     protected void onResume() {
         Log.d(TAG, "OnResume");
         super.onResume();
-
+        //test implementation
+        LocationSensor locationSensor = new LocationSensor(this.getContext());
+        //locationSensor.startRequestLocationUpdates();
     }
 
     public void post(Runnable r) {
@@ -111,34 +103,4 @@ public class SynergyActivity extends AndroidApplication {
             glView.getHolder().setFixedSize(mOrigWidth, mOrigHeight);
         }
     }
-
-    /*
-    //Surface callback Methods
-    //@// TODO: 11/3/15 Move this to other class
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        try {
-            mCamera.setPreviewDisplay(mCameraPreview.getHolder());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Camera.Parameters params = mCamera.getParameters();
-//Get the device's supported sizes and pick the first,
-// which is the largest
-        List<Camera.Size> sizes =
-                params.getSupportedPreviewSizes();
-        Camera.Size selected = sizes.get(0);
-        params.setPreviewSize(selected.width,selected.height);
-        mCamera.setParameters(params);
-        mCamera.startPreview();
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
-    }*/
 }
