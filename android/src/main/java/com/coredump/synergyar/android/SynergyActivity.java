@@ -1,27 +1,20 @@
 package com.coredump.synergyar.android;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
+
 import android.graphics.PixelFormat;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.SurfaceHolder;
+
 import android.view.SurfaceView;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.coredump.synergyar.android.augmentedview.CameraPreview;
 import com.coredump.synergyar.android.configuration.CameraController;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensor;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
 import com.coredump.synergyar.configuration.DeviceCameraController;
 import com.coredump.synergyar.configuration.SynergyAdapter;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * @author fabio
