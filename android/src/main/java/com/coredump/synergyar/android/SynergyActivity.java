@@ -15,6 +15,8 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.coredump.synergyar.android.adapters.LocationAdapter;
 import com.coredump.synergyar.android.adapters.LocationAdapterImpl;
+import com.coredump.synergyar.android.adapters.OrientationAdapter;
+import com.coredump.synergyar.android.adapters.OrientationAdapterImpl;
 import com.coredump.synergyar.android.configuration.CameraController;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensor;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
@@ -73,6 +75,12 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
                 locationSensor.removeUpdates();
             }
         }, 40000);
+
+    //Para probar la orientacion imprimiendo matriz que se actualiza con los sensores
+
+//        final OrientationAdapter orientationAdapter = new OrientationAdapterImpl(this);
+//        orientationAdapter.startOrientationSensor();
+//        orientationAdapter.getOrientation();
     }
 
     @Override
