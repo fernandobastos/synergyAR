@@ -1,4 +1,4 @@
-package com.coredump.synergyar.android.augmentedview;
+package com.coredump.synergyar.android.camera;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -6,9 +6,11 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import java.io.IOException;
 import java.util.List;
+
 
 /**
  * Class for displaying the camera view
@@ -24,6 +26,8 @@ public class CameraPreview extends SurfaceView implements Preview {//, SurfaceHo
     private Camera mCamera;
     //pass image data from the camera to the application
     private SurfaceHolder mHolder;
+    private boolean mReady;
+
 
     public CameraPreview(Context context) {
         super(context);
@@ -31,38 +35,41 @@ public class CameraPreview extends SurfaceView implements Preview {//, SurfaceHo
         initialize();
     }
 
+    @Override
+    public View getView() {
+        View view = this;
+        return view;
+    }
+
+    private void initialize() {
+        Log.d(TAG, "Initializing object");
+        mReady = false;
+        //monitor changes to the surface
+        mHolder = this.getHolder();
+        mHolder.addCallback(new SurfaceCallback());
+        // We're changing the surface to a PUSH surface, meaning we're receiving
+        // all buffer data from another component - the mCamera, in this case.
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+
     //Public interface
 
-    /**
-     *
-     */
     @Override
     public void start() {
         Log.d(TAG, "Starting camera preview");
-        mCamera.startPreview();
+        if(mCamera != null) {
+            mCamera.startPreview();
+            mReady = true;
+        }
     }
 
     @Override
     public void stop() {
         Log.d(TAG, "Stopping camera preview");
         // stop preview before making changes
-        if(mCamera != null) {
+        if(mCamera!=null) {
             mCamera.stopPreview();
-        }
-    }
-
-    /**
-     * Releases the camera object and cleans the
-     * {@link Camera} field
-     */
-    @Override
-    public void release() {
-        Log.d(TAG, "Release camera");
-        if(mCamera != null){
-            //Disconnects and releases the Camera object resources.
-            mCamera.release();
-            //Cleans the camera reference
-            mCamera = null;
+            mReady = false;
         }
     }
 
@@ -71,65 +78,53 @@ public class CameraPreview extends SurfaceView implements Preview {//, SurfaceHo
         return (mCamera != null);
     }
 
-    private void initialize() {
-        Log.d(TAG, "Initializing object");
-
-        //monitor changes to the surface
-        mHolder = getHolder();
-        mHolder.addCallback((SurfaceHolder.Callback) new SurfaceCallback());
-        // We're changing the surface to a PUSH surface, meaning we're receiving
-        // all buffer data from another component - the mCamera, in this case.
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-
     private class SurfaceCallback implements  SurfaceHolder.Callback {
         private final String INNER_TAG = SurfaceCallback.class.getName();
 
         public void surfaceCreated(SurfaceHolder mHolder) {
             Log.d(INNER_TAG, "Create surface");
-            try {
-                mCamera = CameraPreview.safeCameraOpen(Camera.CameraInfo.CAMERA_FACING_BACK, CameraPreview.this.getContext());
-                mCamera.setPreviewDisplay(mHolder);
-            } catch (IOException e) {
-                Log.e(TAG, "Error setting Camera preview", e);
-            }
+            mCamera = CameraPreview.safeCameraOpen(Camera.CameraInfo.CAMERA_FACING_BACK, CameraPreview.this.getContext());
         }
 
         // This method is called when the surface changes, e.g. when it's size is set.
-        // We use the opportunity to initialize the mCamera preview display dimensions.
         @Override
         public void surfaceChanged(SurfaceHolder mHolder, int format, int width, int height) {
-            Log.d(INNER_TAG, "Change surface");
-
+            Log.d(INNER_TAG, "Change on surface");
             //if there is no surface return
             if (mHolder.getSurface() == null || !hasCamera()) {
                 return;
             }
+            if(mReady) {
+                // Stop the preview before resizing or reformatting it.
+                CameraPreview.this.stop();
 
-            // Stop the preview before resizing or reformatting it.
-            CameraPreview.this.stop();
+                // set preview size and make any resize, rotate or
+                // reformatting changes here
+                Camera.Parameters params = mCamera.getParameters();
 
-            // set preview size and make any resize, rotate or
-            // reformatting changes here
-            Camera.Parameters params = mCamera.getParameters();
+                //Get the device's supported sizes and pick the first,
+                // which is the largest
+                List<Camera.Size> sizes = params.getSupportedPreviewSizes();
+                Camera.Size selected = sizes.get(0);
 
-            //Get the device's supported sizes and pick the first,
-            // which is the largest
-            List<Camera.Size> sizes =
-                    params.getSupportedPreviewSizes();
-            Camera.Size selected = sizes.get(0);
-
-            params.setPreviewSize(selected.width,selected.height);
-            mCamera.setParameters(params);
+                params.setPreviewSize(selected.width, selected.height);
+                mCamera.setParameters(params);
+            }
+            try {
+                mCamera.setPreviewDisplay( mHolder );
+            } catch( IOException e ) {
+                Log.e(INNER_TAG,"Something went wrong with the hardware", e);
+            }
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder mHolder) {
             Log.d(INNER_TAG, "Destroy surface");
-            //Release mCamera preview on synergy activity
-            //CameraPreview.this.stop();
-            //CameraPreview.this.release();
+            if(mCamera!=null) {
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
+            }
         }
     }
 
