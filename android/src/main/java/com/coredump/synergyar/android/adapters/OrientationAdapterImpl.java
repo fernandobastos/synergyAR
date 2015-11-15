@@ -12,7 +12,7 @@ public class OrientationAdapterImpl implements OrientationAdapter {
 
     private OrientationSensor mOrientationAdaptee;
 
-    public OrientationAdapterImpl(Context context){
+    public OrientationAdapterImpl(Context context) {
         mOrientationAdaptee = new OrientationSensor(context);
 
     }
@@ -22,10 +22,12 @@ public class OrientationAdapterImpl implements OrientationAdapter {
         return mOrientationAdaptee.getMatrix();
     }
 
+    @Override
     public void startOrientationSensor(){
         mOrientationAdaptee.start();
     }
 
+    @Override
     public void stopOrientationSensor(){
         mOrientationAdaptee.finish();
     }

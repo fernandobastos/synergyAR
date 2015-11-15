@@ -1,4 +1,6 @@
-package com.coredump.synergyar.android.augmentedview;
+package com.coredump.synergyar.android.camera;
+
+import android.view.View;
 
 /**
  * @author fabio
@@ -6,12 +8,13 @@ package com.coredump.synergyar.android.augmentedview;
  * @version 0.0.1
  * Created by fabio on 11/9/15.
  */
-public interface Preview {
+public interface Preview  {
+
     void start();
 
     void stop();
 
-    void release();
+    View getView();
 
     boolean hasCamera();
 }

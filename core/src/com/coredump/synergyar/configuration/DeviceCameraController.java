@@ -1,7 +1,5 @@
 package com.coredump.synergyar.configuration;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
 
 /**
  * @author fabio
@@ -27,7 +25,7 @@ public interface DeviceCameraController {
 
     void stopPreview();
 
-
+    //Async needed when calling from libgdx
     /** Asynchronous interface - need when called from a non platform thread (GDX OpenGl thread)
      * called asynchronous from the Libgdx rendering thread
      */
