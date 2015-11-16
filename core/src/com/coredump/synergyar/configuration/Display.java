@@ -54,7 +54,7 @@ public class Display {
 
         ModelBuilder modelBuilder = new ModelBuilder();
         mModel = modelBuilder.createBox(5f, 5f, 5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                new Material(ColorAttribute.createDiffuse(Color.GOLD)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
         mInstance = new ModelInstance(mModel);
 
