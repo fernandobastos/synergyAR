@@ -24,7 +24,7 @@ public class CameraController implements DeviceCameraController{//, Camera.Pictu
     private static final String TAG = CameraController.class.getName();
     private static final int ONE_SECOND_IN_MILI = 1000;
     private final SynergyActivity mActivity;
-    private Preview mPreview;
+    private final Preview mPreview;
 
     public CameraController(SynergyActivity activity, Preview preview) {
         Log.d(TAG, "Constructor");
