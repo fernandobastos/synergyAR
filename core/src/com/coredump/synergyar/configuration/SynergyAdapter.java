@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 
-
 /**
  * @author fabio
  * @version 0.0.1
@@ -16,9 +15,12 @@ public class SynergyAdapter implements ApplicationListener {
     private final DeviceCameraController mDeviceCameraController;
     private Display mDisplay;
     private Mode mode = Mode.normal;
+    private PerspectiveCamera mCamera;
 
-    public SynergyAdapter(DeviceCameraController cameraControl) {
+
+    public SynergyAdapter(DeviceCameraController cameraControl,PerspectiveCamera camera) {
         mDeviceCameraController = cameraControl;
+        mCamera = camera;
     }
 
     public enum Mode {
@@ -32,7 +34,7 @@ public class SynergyAdapter implements ApplicationListener {
         Gdx.app.log(TAG, "Create");
         //TODO PUT this on PerspectiveAR
         //Is here because it needs the App listener to be initialized
-        mDisplay = new Display(new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        mDisplay = new Display(mCamera);
     }
 
     @Override
@@ -57,6 +59,7 @@ public class SynergyAdapter implements ApplicationListener {
             }
         }
         mDisplay.render();
+        mCamera.update();
 
     }
 
