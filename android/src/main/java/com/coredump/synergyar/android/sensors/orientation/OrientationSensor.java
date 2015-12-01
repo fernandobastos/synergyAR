@@ -5,11 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import com.badlogic.gdx.math.Matrix4;
 
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -237,7 +235,6 @@ public class OrientationSensor {
                         Matrix4.mulVec(mMatT.val, newLookAt);
                         Matrix4.mulVec(mMatT.val, newUp);
                         mMatrix = mMatT.val;
-                        Log.i("MATRIX:", Arrays.toString(mMatrix));
                         mLookAt[0] = newLookAt[0] + mPosition[0];
                         mLookAt[1] = newLookAt[1] + mPosition[1];
                         mLookAt[2] = newLookAt[2] + mPosition[2];

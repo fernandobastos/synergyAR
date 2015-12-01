@@ -16,9 +16,11 @@ public class SynergyAdapter implements ApplicationListener {
     private final DeviceCameraController mDeviceCameraController;
     private Display mDisplay;
     private Mode mode = Mode.normal;
+    private PerspectiveCamera mCamera;
 
-    public SynergyAdapter(DeviceCameraController cameraControl) {
+    public SynergyAdapter(DeviceCameraController cameraControl,PerspectiveCamera perspectiveCamera) {
         mDeviceCameraController = cameraControl;
+        mCamera = perspectiveCamera;
     }
 
     public enum Mode {
@@ -32,7 +34,10 @@ public class SynergyAdapter implements ApplicationListener {
         Gdx.app.log(TAG, "Create");
         //TODO PUT this on PerspectiveAR
         //Is here because it needs the App listener to be initialized
-        mDisplay = new Display(new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        mCamera.fieldOfView = 67;
+        mCamera.viewportWidth = Gdx.graphics.getWidth();
+        mCamera.viewportHeight = Gdx.graphics.getHeight();
+        mDisplay = new Display(mCamera);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class SynergyAdapter implements ApplicationListener {
             }
         }
         mDisplay.render();
-
+        mCamera.update();
     }
 
     @Override
