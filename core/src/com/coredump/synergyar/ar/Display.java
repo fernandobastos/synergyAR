@@ -111,7 +111,7 @@ public class Display extends ScreenAdapter{
 
         entity = mEngine.createEntity();
         squareModel = mEngine.createComponent(Model3DComponent.class);
-        squareModel.model =  modelBuilder.createBox(2f, 2f, 2f,
+        squareModel.model =  modelBuilder.createBox(2f, 2f, 7f,
                 new Material(ColorAttribute.createDiffuse(Color.BLACK)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
         entity.add(squareModel);
