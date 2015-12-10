@@ -6,25 +6,21 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-
 import android.view.SurfaceView;
 import android.widget.Toast;
 
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.coredump.synergyar.android.adapters.LocationAdapter;
 import com.coredump.synergyar.android.adapters.LocationAdapterImpl;
 import com.coredump.synergyar.android.adapters.OrientationAdapter;
 import com.coredump.synergyar.android.adapters.OrientationAdapterImpl;
-import com.coredump.synergyar.android.camera.CameraPreview;
-import com.coredump.synergyar.android.camera.Preview;
 import com.coredump.synergyar.android.camera.CameraController;
+import com.coredump.synergyar.android.camera.CameraPreview;
+import com.coredump.synergyar.android.camera.PerspectiveAR;
+import com.coredump.synergyar.android.camera.Preview;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
 import com.coredump.synergyar.configuration.DeviceCameraController;
-import com.coredump.synergyar.configuration.Display;
 import com.coredump.synergyar.configuration.SynergyAdapter;
 
 /**
@@ -59,8 +55,7 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
         // TODO: 11/15/15 inject this initialization by configuration
         Preview preview = new CameraPreview(this);
         DeviceCameraController cameraController = new CameraController(this, preview);
-
-        initialize(new SynergyAdapter(cameraController), configuration);
+        initialize(new SynergyAdapter(cameraController, new PerspectiveAR(this)), configuration);
         if (graphics.getView() instanceof SurfaceView) {
             SurfaceView glView = (SurfaceView) graphics.getView();
             // @// TODO: 11/8/15 check this comment
