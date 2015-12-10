@@ -20,8 +20,8 @@ import com.coredump.synergyar.android.camera.CameraPreview;
 import com.coredump.synergyar.android.camera.PerspectiveAR;
 import com.coredump.synergyar.android.camera.Preview;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
-import com.coredump.synergyar.configuration.DeviceCameraController;
-import com.coredump.synergyar.configuration.SynergyAdapter;
+import com.coredump.synergyar.ar.DeviceCameraController;
+import com.coredump.synergyar.ar.SynergyAdapter;
 
 /**
  * @author fabio

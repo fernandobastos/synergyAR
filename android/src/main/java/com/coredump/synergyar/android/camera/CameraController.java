@@ -1,6 +1,6 @@
 package com.coredump.synergyar.android.camera;
 
-import com.coredump.synergyar.configuration.DeviceCameraController;
+import com.coredump.synergyar.ar.DeviceCameraController;
 import com.coredump.synergyar.android.SynergyActivity;
 
 import android.app.ActionBar;

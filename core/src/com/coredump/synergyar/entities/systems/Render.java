@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,10 +31,12 @@ import java.util.Comparator;
  * Created by fabio on 11/18/15.
  */
 public class Render extends IteratingSystem {
+    private final static String TAG = Render.class.getName();
+
     private ComponentMapper<Model3DComponent> mModel3DMapper;
     private ComponentMapper<Position3DComponent> mPosition3DMapper;
-    private Array<Entity> renderQueue;
-    Array<ModelInstance> instances;
+    private Array<Entity> mRenderQueue;
+    Array<ModelInstance> mInstances;
     private final Camera mCamera;
     private final CameraInputController mController;
     private final ModelBatch mBatch;
@@ -53,18 +56,23 @@ public class Render extends IteratingSystem {
         mBatch = new ModelBatch();
         mEnvironment = new Environment();
         mIsLoading = true;
+        mInstances = new Array<ModelInstance>();
+        mRenderQueue = new Array<Entity>();
     }
 
     private void loadInstances(){
+        Gdx.app.log(TAG, "Loading instances");
         ModelInstance instance = null;
+        ZIndexComparator comparator = new ZIndexComparator();
         //Sorts the entities
-        renderQueue.sort(new ZIndexComparator());
-
-        for(Entity entity: renderQueue){
+        if(mRenderQueue.size > 1) {
+            mRenderQueue.sort(comparator);
+        }
+        for(Entity entity: mRenderQueue) {
             Model3DComponent model3D = mModel3DMapper.get(entity);
             Position3DComponent position = mPosition3DMapper.get(entity);
             instance = new ModelInstance(model3D.model);
-            instances.add(instance);
+            mInstances.add(instance);
         }
 
         mIsLoading = false;
@@ -72,16 +80,19 @@ public class Render extends IteratingSystem {
 
     @Override
     public void update(float deltaTime) {
+        Gdx.app.log(TAG, "updating system");
+        super.update(deltaTime);
         if (mIsLoading) {
             loadInstances();
         }
         mBatch.begin(mCamera);
-        mBatch.render(instances, mEnvironment);
+        mBatch.render(mInstances, mEnvironment);
         mBatch.end();
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        renderQueue.add(entity);
+        Gdx.app.log(TAG, "Processing entity");
+        mRenderQueue.add(entity);
     }
 }
