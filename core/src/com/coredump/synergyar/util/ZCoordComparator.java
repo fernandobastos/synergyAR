@@ -10,16 +10,16 @@ import java.util.Comparator;
 /**
  * Created by fabio on 12/9/15.
  */
-public class ZIndexComparator implements Comparator<Entity>{
+public class ZCoordComparator implements Comparator<Entity>{
     private ComponentMapper<Position3DComponent> mPosition3DMapper;
 
-    public ZIndexComparator() {
+    public ZCoordComparator() {
         mPosition3DMapper = ComponentMapper.getFor(Position3DComponent.class);
     }
 
     @Override
     public int compare(Entity e1, Entity e2) {
-        return (int)Math.signum(mPosition3DMapper.get(e1).position.z - mPosition3DMapper.get(e2).position.z);
+        return (int)Math.signum(mPosition3DMapper.get(e1).currentPosition.z - mPosition3DMapper.get(e2).currentPosition.z);
     }
 }
 

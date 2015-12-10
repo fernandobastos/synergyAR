@@ -8,6 +8,7 @@ package com.coredump.synergyar.ar;
  */
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
@@ -27,11 +28,13 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.coredump.synergyar.entities.components.Model3DComponent;
-import com.coredump.synergyar.entities.components.Object3DComponent;
+import com.coredump.synergyar.entities.components.Position3DComponent;
 import com.coredump.synergyar.entities.systems.Render;
+import com.coredump.synergyar.util.ZCoordComparator;
 
 public class Display extends ScreenAdapter{
     private Camera mCamera;
@@ -66,7 +69,7 @@ public class Display extends ScreenAdapter{
         mCamera.near = 1f;
         mCamera.far = 300f;
         mCamera.update();
-
+        Gdx.app.log(TAG,mCamera.toString()+" "+mCamera.near);
         assets = new AssetManager();
         assets.load("models/pokemon/johnny_d_wicked_bulbasaur_01.g3dj", Model.class);
         mLoading = true;
@@ -89,15 +92,35 @@ public class Display extends ScreenAdapter{
         //TODO put this in other class
         mEngine = new PooledEngine();
         //TODO just testing
-        Entity entity = mEngine.createEntity();
-        Model3DComponent squareModel = new Model3DComponent();
+        Entity entity = null;
+        Model3DComponent squareModel=null;
+        Position3DComponent position = null;
+
+        entity = mEngine.createEntity();
+        squareModel = mEngine.createComponent(Model3DComponent.class);
+        position = mEngine.createComponent(Position3DComponent.class);
+
         squareModel.model =  modelBuilder.createBox(5f, 5f, 5f,
                 new Material(ColorAttribute.createDiffuse(Color.GOLD)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
+        position.currentPosition = new Vector3(2f,2f,2f);
         entity.add(squareModel);
+        entity.add(position);
         mEngine.addEntity(entity);
-        mEngine.addSystem(new Render(mCamera, new CameraInputController(mCamera)));
+
+        entity = mEngine.createEntity();
+        squareModel = mEngine.createComponent(Model3DComponent.class);
+        squareModel.model =  modelBuilder.createBox(2f, 2f, 2f,
+                new Material(ColorAttribute.createDiffuse(Color.BLACK)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        entity.add(squareModel);
+        entity.add(position);
+        position.currentPosition = new Vector3(3f,3f,1f);
+        mEngine.addEntity(entity);
+        EntitySystem system = new Render(mCamera, new CameraInputController(mCamera), new ZCoordComparator());
+
+        mEngine.addSystem(system);
         //mEnvironment = new Environment();
         //mEnvironment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         //mEnvironment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
@@ -107,21 +130,8 @@ public class Display extends ScreenAdapter{
         //mViewport.setScreenSize(width, height);
     }
 
-    private void doneLoading() {
-        Model ship = assets.get("models/ship/ship.g3db", Model.class);
-        for (float x = -5f; x <= 5f; x += 2f) {
-            for (float z = -5f; z <= 5f; z += 2f) {
-                ModelInstance shipInstance = new ModelInstance(ship);
-                shipInstance.transform.setToTranslation(x, 0, z);
-                instances.add(shipInstance);
-            }
-        }
-        mLoading = false;
-    }
-
     @Override
     public void render(float deltaTime) {
-        Gdx.app.log(TAG, "rendering");
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         mEngine.update(deltaTime);
