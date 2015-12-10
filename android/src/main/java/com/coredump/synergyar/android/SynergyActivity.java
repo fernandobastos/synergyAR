@@ -72,27 +72,6 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
         // keep the original screen size
         mOrigHeight = graphics.getWidth();
         mOrigWidth = graphics.getHeight();
-
-        //Location
-        final LocationAdapter locationSensor = new LocationAdapterImpl(this);
-        Location lastKnownLocation = locationSensor.getLocation();
-        showToast("Lat: " + lastKnownLocation.getLatitude() + " | Long: " +
-                lastKnownLocation.getLongitude());
-
-        locationSensor.startRequestLocationUpdates(this);
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                locationSensor.removeUpdates();
-            }
-        }, 40000);
-
-        //Para probar la orientacion imprimiendo matriz que se actualiza con los sensores
-        final OrientationAdapter orientationAdapter = new OrientationAdapterImpl(this);
-        orientationAdapter.startOrientationSensor();
-        orientationAdapter.getOrientation();
     }
 
     @Override
@@ -112,7 +91,26 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
     protected void onResume() {
         Log.d(TAG, "OnResume");
         super.onResume();
-        //restart camera
+        //Location
+        final LocationAdapter locationSensor = new LocationAdapterImpl(this);
+        Location lastKnownLocation = locationSensor.getLocation();
+        //showToast("Lat: " + lastKnownLocation.getLatitude() + " | Long: " +
+        //       lastKnownLocation.getLongitude());
+
+        locationSensor.startRequestLocationUpdates(this);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                locationSensor.removeUpdates();
+            }
+        }, 40000);
+
+        //Para probar la orientacion imprimiendo matriz que se actualiza con los sensores
+        final OrientationAdapter orientationAdapter = new OrientationAdapterImpl(this);
+        orientationAdapter.startOrientationSensor();
+        orientationAdapter.getOrientation();
     }
 
     public void post(Runnable r) {

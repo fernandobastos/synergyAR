@@ -17,6 +17,7 @@ public class SynergyAdapter implements ApplicationListener {
     private Display mDisplay;
     private Mode mode = Mode.normal;
 
+
     public SynergyAdapter(DeviceCameraController cameraControl) {
         mDeviceCameraController = cameraControl;
     }
@@ -30,7 +31,8 @@ public class SynergyAdapter implements ApplicationListener {
     @Override
     public void create() {
         Gdx.app.log(TAG, "Create");
-        //TODO PUT this on PerspectiveAR
+
+        //TODO PUT this in PerspectiveAR
         //Is here because it needs the App listener to be initialized
         mDisplay = new Display(new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     }
