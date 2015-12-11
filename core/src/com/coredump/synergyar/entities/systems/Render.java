@@ -4,24 +4,22 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.ashley.systems.SortedIteratingSystem;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.coredump.synergyar.entities.components.Model3DComponent;
 import com.coredump.synergyar.entities.components.Position3DComponent;
-import com.coredump.synergyar.util.ZCoordComparator;
 
 import java.util.Comparator;
 
@@ -51,6 +49,7 @@ public class Render extends IteratingSystem {
     public Render(Camera camera, CameraInputController controller,
                   Comparator<Entity> comparator) {
         super(Family.all(Position3DComponent.class, Model3DComponent.class).get());
+        Bullet.init();
         mModel3DMapper = ComponentMapper.getFor(Model3DComponent.class);
         mPosition3DMapper = ComponentMapper.getFor(Position3DComponent.class);
         //Might be encapsulated inside the PerspectiveAR class
@@ -101,5 +100,43 @@ public class Render extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         Gdx.app.log(TAG, "Processing entity");
         mRenderQueue.add(entity);
+    }
+
+
+    static class GameObject extends ModelInstance implements Disposable {
+        public final btCollisionObject body;
+        public boolean moving;
+
+        public GameObject (Model model, String node, btCollisionShape shape) {
+            super(model, node);
+            body = new btCollisionObject();
+            body.setCollisionShape(shape);
+        }
+
+        @Override
+        public void dispose () {
+            body.dispose();
+        }
+
+        static class Constructor implements Disposable {
+            public final Model model;
+            public final String node;
+            public final btCollisionShape shape;
+
+            public Constructor (Model model, String node, btCollisionShape shape) {
+                this.model = model;
+                this.node = node;
+                this.shape = shape;
+            }
+
+            public GameObject construct () {
+                return new GameObject(model, node, shape);
+            }
+
+            @Override
+            public void dispose () {
+                shape.dispose();
+            }
+        }
     }
 }
