@@ -1,4 +1,4 @@
-package com.coredump.synergyar.configuration;
+package com.coredump.synergyar.ar;
 
 
 /**

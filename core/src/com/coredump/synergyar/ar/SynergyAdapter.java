@@ -1,7 +1,8 @@
-package com.coredump.synergyar.configuration;
+package com.coredump.synergyar.ar;
 
-import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 
 
@@ -11,10 +12,10 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
  * @since 0.0.1
  * Created by fabio on 11/1/15.
  */
-public class SynergyAdapter implements ApplicationListener {
+public class SynergyAdapter extends Game {
     private static final String TAG = SynergyAdapter.class.getName();;
     private final DeviceCameraController mDeviceCameraController;
-    private Display mDisplay;
+    private ScreenAdapter mDisplay;
     private Mode mode = Mode.normal;
     private PerspectiveCamera mCamera;
 
@@ -32,12 +33,14 @@ public class SynergyAdapter implements ApplicationListener {
     @Override
     public void create() {
         Gdx.app.log(TAG, "Create");
-        //TODO PUT this on PerspectiveAR
+
+        //TODO PUT this in PerspectiveAR
         //Is here because it needs the App listener to be initialized
         mCamera.fieldOfView = 67;
         mCamera.viewportWidth = Gdx.graphics.getWidth();
         mCamera.viewportHeight = Gdx.graphics.getHeight();
         mDisplay = new Display(mCamera);
+        setScreen(mDisplay);
     }
 
     @Override
@@ -61,8 +64,8 @@ public class SynergyAdapter implements ApplicationListener {
                 mDeviceCameraController.startPreviewAsync();
             }
         }
-        mDisplay.render();
         mCamera.update();
+        super.render();
     }
 
     @Override
