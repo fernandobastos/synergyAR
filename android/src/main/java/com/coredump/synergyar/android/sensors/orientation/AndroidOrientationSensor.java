@@ -17,45 +17,51 @@ import java.util.concurrent.Semaphore;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class AndroidOrientationSensor extends OrientationSensor {
+public class AndroidOrientationSensor implements OrientationSensor{
+    protected static final float CHANGE_FACT = 3.5f;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
-    private Sensor mOrientationSensor;
-    private Sensor mSensorLinAcce;
     private SensorEventListener mListener;
-    private Semaphore mClear = new Semaphore(1);
+    private float mMatrix[] = new float[16];
+    private BufferAlgo mAccelerometerBuffer;
+    private BufferAlgo mMagnetometerBuffer;
+    private float[] mLookAt = { 0, 0, -100, 1 };
+    private float[] mUp = { 0, 1, 0, 1 };
+    private float[] mPosition = { 0, 0, 0 };
     private float mFar;
+    private Sensor mOrientationSensor;
+    private boolean mStable;
+    private Sensor mSensorLinAcce;
     private float mOrientation[] = new float[3];
     private float mAcceleration[] = new float[3];
     private float mOldOrientation[];
     private float mOldAcceleration[];
+    private float mRotation[];
     private float[] mNewMat;
     private Matrix4 mMatT;
-    private BufferAlgo mAccelerometerBuffer;
-    private BufferAlgo mMagnetometerBuffer;
+    private Semaphore mClear = new Semaphore(1);
     private boolean mQuit;
-    private boolean mStable;
 
     public AndroidOrientationSensor(Context context, float mFar, boolean isMarker) {
         mSensorManager = (SensorManager) context
                 .getSystemService(Context.SENSOR_SERVICE);
-
         mAccelerometerBuffer = new BufferAlgo(0.1f, 0.2f);
         mMagnetometerBuffer = new BufferAlgo(0.1f, 0.2f);
         this.mFar = mFar;
     }
     public AndroidOrientationSensor(Context context){
-        this(context, 1000, true);
+        this(context,1000,true);
     }
-
+    @Override
+    public float[] getOldOrientation() {
+        return mRotation;
+    }
     @Override
     public void start() {
         mListener = new MyOrientationListener();
-
         mAccelerometer = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
         mMagnetometer = mSensorManager.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).get(0);
-
         mSensorManager.registerListener(mListener, mAccelerometer,
                 SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(mListener, mMagnetometer,
@@ -66,35 +72,83 @@ public class AndroidOrientationSensor extends OrientationSensor {
                 SensorManager.SENSOR_DELAY_FASTEST);
 
     }
-
     @Override
     public boolean getStable() {
         return mStable;
     }
+    @Override
+    public float[] getMatrix() {
+        return mMatrix;
+    }
+    @Override
+    public float[] getLookAt() {
+        float[] out = new float[3];
+        out[0] = mLookAt[0];
+        out[1] = mLookAt[1];
+        out[2] = mLookAt[2];
+        return out;
+    }
+    @Override
+    public float[] getUp() {
+        float[] out = new float[3];
+        out[0] = mUp[0];
+        out[1] = mUp[1];
+        out[2] = mUp[2];
+        return out;
+    }
+    @Override
+    public void setLookAtOffset(float x, float y, float z) {
+        mPosition[0] = x;
+        mPosition[1] = y;
+        mPosition[2] = z;
+    }
+    @Override
+    public void setUp() {
 
+    }
     @Override
     public void finish() {
+        mSensorManager.unregisterListener(mListener);
+        mSensorManager = null;
+
         try {
             mClear.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        mSensorManager.unregisterListener(mListener);
-        mSensorManager = null;
         mAccelerometer = null;
         mMagnetometer = null;
         mListener = null;
+        mMatrix = null;
+        mAccelerometerBuffer = null;
+        mMagnetometerBuffer = null;
+        mLookAt = null;
+        mUp = null;
+        mPosition = null;
         mOrientationSensor = null;
         mSensorLinAcce = null;
         mOrientation = null;
         mAcceleration = null;
         mOldOrientation = null;
         mOldAcceleration = null;
+        mRotation = null;
         mMatT = null;
         mNewMat = null;
         mQuit = true;
         mClear.release();
-        super.finish();
+
+    }
+
+    // LowPass Filter
+    @Override
+    public float[] lowPass(float[] input, float[] output, float alpha) {
+        if (output == null)
+            return input;
+
+        for (int i = 0; i < input.length; i++) {
+            output[i] = output[i] + alpha * (input[i] - output[i]);
+        }
+        return output;
     }
 
     public class MyOrientationListener implements SensorEventListener {
@@ -103,6 +157,7 @@ public class AndroidOrientationSensor extends OrientationSensor {
         }
 
         public void onSensorChanged(SensorEvent evt) {
+
             if (mClear.tryAcquire()) {
                 if (!mQuit) {
                     int type = evt.sensor.getType();
@@ -136,26 +191,21 @@ public class AndroidOrientationSensor extends OrientationSensor {
                         mMatT = new Matrix4(mNewMat).tra();
                         float[] newLookAt = { 0, 0, -mFar, 1 };
                         float[] newUp = { 0, 1, 0, 1 };
-                        float[] position = getPosition();
-
                         Matrix4.mulVec(mMatT.val, newLookAt);
                         Matrix4.mulVec(mMatT.val, newUp);
-                        setMatrix(mMatT.val);
+                        mMatrix = mMatT.val;
+                        mLookAt[0] = newLookAt[0] + mPosition[0];
+                        mLookAt[1] = newLookAt[1] + mPosition[1];
+                        mLookAt[2] = newLookAt[2] + mPosition[2];
 
-                        setLookAtOffset(newLookAt[0] + position[0],
-                                newLookAt[1] + position[1],
-                                newLookAt[2] + position[2]);
-
-                        setUp(newUp);
-
-                        //clean values for concurrency problems
+                        mUp = newUp;
                         newLookAt = null;
                         newUp = null;
-                        position = null;
                     }
                     mClear.release();
                 }
             }
         }
+
     }
 }
