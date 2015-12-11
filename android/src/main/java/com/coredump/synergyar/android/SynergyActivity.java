@@ -11,17 +11,16 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.coredump.synergyar.android.adapters.LocationAdapter;
-import com.coredump.synergyar.android.adapters.LocationAdapterImpl;
-import com.coredump.synergyar.android.adapters.OrientationAdapter;
-import com.coredump.synergyar.android.adapters.OrientationAdapterImpl;
 import com.coredump.synergyar.android.camera.CameraController;
 import com.coredump.synergyar.android.camera.CameraPreview;
-import com.coredump.synergyar.android.camera.PerspectiveAR;
 import com.coredump.synergyar.android.camera.Preview;
+import com.coredump.synergyar.android.sensors.geolocation.LocationSensor;
 import com.coredump.synergyar.android.sensors.geolocation.LocationSensorListener;
-import com.coredump.synergyar.ar.DeviceCameraController;
+import com.coredump.synergyar.android.sensors.orientation.AndroidOrientationSensor;
+import com.coredump.synergyar.ar.PerspectiveAR;
+import com.coredump.synergyar.ar.hardware.DeviceCameraController;
 import com.coredump.synergyar.ar.SynergyAdapter;
+import com.coredump.synergyar.ar.hardware.OrientationSensor;
 
 /**
  * @author fabio
@@ -51,11 +50,14 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
     }
 
     private void initializeApp(AndroidApplicationConfiguration configuration) {
-
         // TODO: 11/15/15 inject this initialization by configuration
         Preview preview = new CameraPreview(this);
         DeviceCameraController cameraController = new CameraController(this, preview);
-        initialize(new SynergyAdapter(cameraController, new PerspectiveAR(this)), configuration);
+        OrientationSensor orientationSensor = new AndroidOrientationSensor(this);
+
+        initialize(new SynergyAdapter(cameraController, new PerspectiveAR(orientationSensor)), configuration);
+
+
         if (graphics.getView() instanceof SurfaceView) {
             SurfaceView glView = (SurfaceView) graphics.getView();
             // @// TODO: 11/8/15 check this comment
@@ -87,7 +89,7 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
         Log.d(TAG, "OnResume");
         super.onResume();
         //Location
-        final LocationAdapter locationSensor = new LocationAdapterImpl(this);
+        final LocationSensor locationSensor = new LocationSensor(this);
         Location lastKnownLocation = locationSensor.getLocation();
         //showToast("Lat: " + lastKnownLocation.getLatitude() + " | Long: " +
         //       lastKnownLocation.getLongitude());
@@ -102,10 +104,11 @@ public class SynergyActivity extends AndroidApplication implements LocationSenso
             }
         }, 40000);
 
-        //Para probar la orientacion imprimiendo matriz que se actualiza con los sensores
-        final OrientationAdapter orientationAdapter = new OrientationAdapterImpl(this);
-        orientationAdapter.startOrientationSensor();
-        orientationAdapter.getOrientation();
+        /*/Para probar la orientacion imprimiendo matriz que se actualiza con los sensores
+        final OrientationSensor orientationSensor = new AndroidOrientationSensor(this);
+        orientationSensor.start();
+        orientationSensor.getMatrix();
+        */
     }
 
     public void post(Runnable r) {

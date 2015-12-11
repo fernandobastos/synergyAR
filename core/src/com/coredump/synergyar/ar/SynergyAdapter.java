@@ -2,8 +2,8 @@ package com.coredump.synergyar.ar;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.coredump.synergyar.ar.hardware.DeviceCameraController;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -15,13 +15,13 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 public class SynergyAdapter extends Game {
     private static final String TAG = SynergyAdapter.class.getName();;
     private final DeviceCameraController mDeviceCameraController;
-    private ScreenAdapter mDisplay;
     private Mode mode = Mode.normal;
-    private PerspectiveCamera mCamera;
+    private PerspectiveAR mCamera;
+    public Semaphore mCanRender = new Semaphore(1);
 
-    public SynergyAdapter(DeviceCameraController cameraControl,PerspectiveCamera perspectiveCamera) {
+    public SynergyAdapter(com.coredump.synergyar.ar.hardware.DeviceCameraController cameraControl, PerspectiveAR camera) {
         mDeviceCameraController = cameraControl;
-        mCamera = perspectiveCamera;
+        mCamera = camera;
     }
 
     public enum Mode {
@@ -33,20 +33,16 @@ public class SynergyAdapter extends Game {
     @Override
     public void create() {
         Gdx.app.log(TAG, "Create");
-
-        //TODO PUT this in PerspectiveAR
-        //Is here because it needs the App listener to be initialized
         mCamera.fieldOfView = 67;
         mCamera.viewportWidth = Gdx.graphics.getWidth();
         mCamera.viewportHeight = Gdx.graphics.getHeight();
-        mDisplay = new Display(mCamera);
-        setScreen(mDisplay);
+        setScreen(new WorldDisplay(mCamera));
     }
 
     @Override
     public void dispose() {
         Gdx.app.log(TAG, "OnDispose");
-        mDisplay.dispose();
+        getScreen().dispose();
     }
 
     @Override
@@ -64,8 +60,10 @@ public class SynergyAdapter extends Game {
                 mDeviceCameraController.startPreviewAsync();
             }
         }
-        mCamera.update();
-        super.render();
+        if(mCanRender.tryAcquire()) {
+            super.render();
+            mCanRender.release();
+        }
     }
 
     @Override
