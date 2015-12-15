@@ -4,24 +4,18 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.ashley.systems.SortedIteratingSystem;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
+import com.coredump.synergyar.ar.PerspectiveAR;
 import com.coredump.synergyar.entities.components.Model3DComponent;
 import com.coredump.synergyar.entities.components.Position3DComponent;
-import com.coredump.synergyar.util.ZCoordComparator;
 
 import java.util.Comparator;
 
@@ -31,14 +25,14 @@ import java.util.Comparator;
  * @since 0.0.1
  * Created by fabio on 11/18/15.
  */
-public class Render extends IteratingSystem {
-    private final static String TAG = Render.class.getName();
+public class RenderSystem extends IteratingSystem {
+    private final static String TAG = RenderSystem.class.getName();
 
     private ComponentMapper<Model3DComponent> mModel3DMapper;
     private ComponentMapper<Position3DComponent> mPosition3DMapper;
     private Array<Entity> mRenderQueue;
     Array<ModelInstance> mInstances;
-    private final Camera mCamera;
+    private final PerspectiveAR mCamera;
     private final CameraInputController mController;
     private final ModelBatch mBatch;
     private Environment mEnvironment;
@@ -48,8 +42,8 @@ public class Render extends IteratingSystem {
 
     //private ComponentMapper<Geolocation> mPositions = ComponentMapper.getFor(Geolocation.class);
 
-    public Render(Camera camera, CameraInputController controller,
-                  Comparator<Entity> comparator) {
+    public RenderSystem(PerspectiveAR camera, CameraInputController controller,
+                        Comparator<Entity> comparator) {
         super(Family.all(Position3DComponent.class, Model3DComponent.class).get());
         mModel3DMapper = ComponentMapper.getFor(Model3DComponent.class);
         mPosition3DMapper = ComponentMapper.getFor(Position3DComponent.class);
@@ -69,7 +63,7 @@ public class Render extends IteratingSystem {
 
     private void loadInstances() {
         Gdx.app.log(TAG, "Loading instances");
-        ModelInstance instance = null;
+        ModelInstance instance;
         Gdx.app.log(TAG, mRenderQueue.size+"");
         //Sorts the entities
         if(mRenderQueue.size > 1) {
@@ -79,9 +73,9 @@ public class Render extends IteratingSystem {
             Model3DComponent model3D = mModel3DMapper.get(entity);
             Position3DComponent position = mPosition3DMapper.get(entity);
             instance = new ModelInstance(model3D.model);
+            instance.transform.setToTranslation(position.currentPosition);
             mInstances.add(instance);
         }
-        Gdx.app.log(TAG, mInstances.size+"");
         mIsLoading = false;
     }
 
@@ -92,6 +86,7 @@ public class Render extends IteratingSystem {
         if (mIsLoading) {
             loadInstances();
         }
+        mCamera.render();
         mBatch.begin(mCamera);
         mBatch.render(mInstances, mEnvironment);
         mBatch.end();

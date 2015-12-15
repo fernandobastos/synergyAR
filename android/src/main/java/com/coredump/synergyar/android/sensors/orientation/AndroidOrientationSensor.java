@@ -7,21 +7,25 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.badlogic.gdx.math.Matrix4;
+import com.coredump.synergyar.ar.hardware.OrientationSensor;
+import com.coredump.synergyar.util.BufferAlgo;
 
 import java.util.concurrent.Semaphore;
 
 /**
- * Created by fernando on 08-Nov-15.
+ * @author fernando, 08-Nov-15
+ * @version 0.0.1
+ * @since 0.0.1
  */
-public class OrientationSensor {
+public class AndroidOrientationSensor implements OrientationSensor{
     protected static final float CHANGE_FACT = 3.5f;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
     private SensorEventListener mListener;
     private float mMatrix[] = new float[16];
-    private BufferAlgo1 mAccelerometerBuffer;
-    private BufferAlgo1 mMagnetometerBuffer;
+    private BufferAlgo mAccelerometerBuffer;
+    private BufferAlgo mMagnetometerBuffer;
     private float[] mLookAt = { 0, 0, -100, 1 };
     private float[] mUp = { 0, 1, 0, 1 };
     private float[] mPosition = { 0, 0, 0 };
@@ -39,21 +43,21 @@ public class OrientationSensor {
     private Semaphore mClear = new Semaphore(1);
     private boolean mQuit;
 
-    public OrientationSensor(Context context, float mFar, boolean isMarker) {
+    public AndroidOrientationSensor(Context context, float mFar, boolean isMarker) {
         mSensorManager = (SensorManager) context
                 .getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometerBuffer = new BufferAlgo1(0.1f, 0.2f);
-        mMagnetometerBuffer = new BufferAlgo1(0.1f, 0.2f);
+        mAccelerometerBuffer = new BufferAlgo(0.1f, 0.2f);
+        mMagnetometerBuffer = new BufferAlgo(0.1f, 0.2f);
         this.mFar = mFar;
     }
-    public OrientationSensor(Context context){
+    public AndroidOrientationSensor(Context context){
         this(context,1000,true);
     }
-
+    @Override
     public float[] getOldOrientation() {
         return mRotation;
     }
-
+    @Override
     public void start() {
         mListener = new MyOrientationListener();
         mAccelerometer = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
@@ -68,15 +72,15 @@ public class OrientationSensor {
                 SensorManager.SENSOR_DELAY_FASTEST);
 
     }
-
+    @Override
     public boolean getStable() {
         return mStable;
     }
-
+    @Override
     public float[] getMatrix() {
         return mMatrix;
     }
-
+    @Override
     public float[] getLookAt() {
         float[] out = new float[3];
         out[0] = mLookAt[0];
@@ -84,7 +88,7 @@ public class OrientationSensor {
         out[2] = mLookAt[2];
         return out;
     }
-
+    @Override
     public float[] getUp() {
         float[] out = new float[3];
         out[0] = mUp[0];
@@ -92,17 +96,17 @@ public class OrientationSensor {
         out[2] = mUp[2];
         return out;
     }
-
+    @Override
     public void setLookAtOffset(float x, float y, float z) {
         mPosition[0] = x;
         mPosition[1] = y;
         mPosition[2] = z;
     }
-
+    @Override
     public void setUp() {
 
     }
-
+    @Override
     public void finish() {
         mSensorManager.unregisterListener(mListener);
         mSensorManager = null;
@@ -135,54 +139,9 @@ public class OrientationSensor {
 
     }
 
-    // Filter Class1
-    public class BufferAlgo1 {
-
-        private final float a;
-        private final float b;
-        private final float m;
-        private final float n;
-
-        public BufferAlgo1(float a, float b) {
-            this.a = a;
-            this.b = b;
-            m = 1f / (b - a);
-            n = a / (a - b);
-        }
-
-        public boolean execute(float[] target, float[] values) {
-            target[0] = morph(target[0], values[0]);
-            target[1] = morph(target[1], values[1]);
-            target[2] = morph(target[2], values[2]);
-            return true;
-        }
-
-        /**
-         * @param v
-         * @param newV
-         * @return newT=t+f(|v-t|)
-         */
-        private float morph(float v, float newV) {
-            float x = newV - v;
-            if (x >= 0) {
-                if (x < a)
-                    return v; // v+0*x
-                if (b <= x)
-                    return newV; // v+1*x
-                return v + x * m + n;
-            } else {
-                if (-x < a)
-                    return v;
-                if (b <= -x)
-                    return newV;
-                return v + x * m + n;
-            }
-        }
-
-    }
-
     // LowPass Filter
-    protected float[] lowPass(float[] input, float[] output, float alpha) {
+    @Override
+    public float[] lowPass(float[] input, float[] output, float alpha) {
         if (output == null)
             return input;
 
